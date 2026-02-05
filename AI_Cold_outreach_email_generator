@@ -1,0 +1,31 @@
+from google import genai
+
+client = genai.Client()
+
+sender_name = input("Enter sender name: ")
+recipient_name = input("Enter recipient name: ")
+service_name = input("Enter service offered: ")
+target_company = input("Enter target company: ")
+
+prompt = f"""
+You are a professional sales copywriter.
+Write a concise, friendly cold email from {sender_name}
+to {recipient_name} at {target_company}
+offering {service_name}.
+Keep it under 120 words.
+"""
+
+response = client.models.generate_content(
+    model="models/gemini-2.5-flash",
+    contents=prompt
+)
+
+email_text = response.text.strip()
+print("\nGenerated Email:\n")
+print(email_text)
+
+filename = f"cold_email_{target_company.replace(' ', '_')}.txt"
+with open(filename, "w") as f:
+    f.write(email_text)
+
+print(f"\nEmail saved as {filename}")
