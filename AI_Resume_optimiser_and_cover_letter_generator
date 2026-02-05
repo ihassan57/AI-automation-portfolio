@@ -1,0 +1,73 @@
+from google import genai
+
+client = genai.Client()
+
+job_role = input("Enter job role: ")
+job_description = input("Enter job description: ")
+resume_text = input("Enter resume text: ")
+
+resume_prompt = f"""
+You are an expert career coach and professional resume writer.
+
+Optimize the resume content below for the role of {job_role}, based on the job description provided.
+
+Instructions:
+- Rewrite bullet points to be impact-driven and results-focused
+- Use strong action verbs
+- Align skills and experience with the job description
+- Keep it concise and ATS-friendly
+- Do NOT add fake experience
+- Output only the optimized resume content
+
+Job Description:
+{job_description}
+
+Resume Content:
+{resume_text}
+"""
+
+cover_letter_prompt = f"""
+You are a professional career coach and hiring manager.
+
+Write a tailored, professional cover letter for the role of {job_role}, based on the job description and candidate background.
+
+Instructions:
+- Keep it under 400 words
+- Match tone to a modern professional standard
+- Highlight relevant skills and experience
+- Do NOT use generic phrases
+- Output only the final cover letter text
+
+Job Description:
+{job_description}
+
+Candidate Resume:
+{resume_text}
+"""
+
+choice = input("Press 1 for resume optimization, Press 2 for cover letter: ")
+
+if choice == "1":
+    prompt = resume_prompt
+    filename = "optimized_resume.txt"
+elif choice == "2":
+    prompt = cover_letter_prompt
+    filename = "cover_letter.txt"
+else:
+    print("Invalid choice.")
+    exit()
+
+response = client.models.generate_content(
+    model="models/gemini-2.5-flash",
+    contents=prompt
+)
+
+output_text = response.text.strip()
+
+print("\nGenerated Output:\n")
+print(output_text)
+
+with open(filename, "w") as f:
+    f.write(output_text)
+
+print(f"\nSaved successfully as {filename}")
